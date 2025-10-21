@@ -7,11 +7,7 @@ export async function getTreeAndDepsController(req: Request, res: Response) {
 
   const data = await getSchemaTreeAndDeps(formCode, {
     version: version ? Number(version) : undefined,
-    status,
   });
-
-  // Optional: set ETag from hash for caching
-  res.setHeader("ETag", data.meta.hash);
 
   return res.json({ success: true, data });
 }

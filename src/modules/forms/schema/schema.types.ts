@@ -34,7 +34,6 @@ export interface SchemaPayload {
     form: { code: string; title?: string };
     version: { version: number; status: string };
     schemaVersion: string;
-    hash: string;
     generatedAt: string;
   };
   tree: NormalizedNode[];
