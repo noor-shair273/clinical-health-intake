@@ -7,7 +7,6 @@ const ajv = new Ajv({ allErrors: true, strict: false });
 addFormats(ajv);
 const validateDslSchema = ajv.compile(dslSchema);
 
-// --- helpers ---
 function collectFieldCodes(tree: any[]): Set<string> {
   const codes = new Set<string>();
   const walk = (nodes: any[]) => {
@@ -57,7 +56,34 @@ function checkLogicReferencesExist(dsl: any, codes: Set<string>) {
   return errs;
 }
 
-// --- main entry ---
+function checkMinMaxConstraints(dsl: any) {
+  const errs: Array<{ field: string; message: string }> = [];
+
+  const walk = (nodes: any[]) => {
+    for (const n of nodes || []) {
+      // Only apply to repeatable groups
+      if (n.type === "group_repeat") {
+        const min = n.min_items ?? 0;   // Default if undefined
+        const max = n.max_items ?? Infinity;
+
+        if (max < min) {
+          errs.push({
+            field: n.code,
+            message: `max_items (${max}) must be greater than or equal to min_items (${min})`
+          });
+        }
+      }
+
+      // recurse into nested fields
+      if (Array.isArray(n.fields)) walk(n.fields);
+    }
+  };
+
+  walk(dsl.fields || []);
+  return errs;
+}
+
+
 export function validateDslOrThrow(dsl: any) {
   const ok = validateDslSchema(dsl);
   if (!ok) {
@@ -74,11 +100,15 @@ export function validateDslOrThrow(dsl: any) {
   // semantic checks
   const codes = collectFieldCodes(dsl.fields || []);
   const refErrs = checkLogicReferencesExist(dsl, codes);
-  if (refErrs.length) {
+  const minMaxErrs = checkMinMaxConstraints(dsl);
+
+  const allErrs = [...refErrs, ...minMaxErrs];
+  
+  if (allErrs.length) {
     const error: ValidationErrorType = new Error("Validation failed") as ValidationErrorType;
     error.name = "ValidationError";
     error.isValidationError = true;
-    error.errors = refErrs;
+    error.errors = allErrs;
     throw error;
   }
 }

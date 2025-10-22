@@ -7,7 +7,6 @@ export async function validateSubmissionController(req: Request, res: Response) 
   const submission = req.body;
 
   const result = await validateSubmission(formCode, submission);
-  // Return 200 with validity + errors (do not throw for business validation)
   return res.status(200).json({
     success: true,
     form: { id: result.form._id, code: result.form.code },

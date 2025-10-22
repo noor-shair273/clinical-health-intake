@@ -1,9 +1,3 @@
-/**
- * Normalizes DSL into a consistent tree format
- * - Ensures field structure is predictable
- * - Supports fields, group, and group_repeat
- */
-
 import { NormalizedNode } from "./schema.types";
 
 export interface NormalizedField {

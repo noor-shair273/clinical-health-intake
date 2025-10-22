@@ -13,7 +13,6 @@ export const dslSchema = {
   },
   $defs: {
     jsonLogic: {
-      // we allow any JSON-Logic object (loose at schema level; semantic checks later)
       type: ["object", "boolean"],
       additionalProperties: true
     },
@@ -29,7 +28,7 @@ export const dslSchema = {
     field: {
       type: "object",
       required: ["code", "type", "label"],
-      additionalProperties: false,
+      additionalProperties: true,
       properties: {
         code: { type: "string", pattern: "^[a-z][a-z0-9_]*$" },
         type: {

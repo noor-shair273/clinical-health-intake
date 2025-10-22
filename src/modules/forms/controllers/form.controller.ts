@@ -38,8 +38,7 @@ export async function listVersionsController(req: Request, res: Response) {
 }
 
 export async function updateDraftDslController(req: Request, res: Response) {
-  // body is arbitrary JSON (validated by DSL schema in service)
   const { formCode } = req.params;
-  const result = await FormService.updateDraftDsl(formCode, req.body);
+  const result = await FormService.updateDraftDsl(formCode, req.body.dsl);
   res.status(200).json({ success: true, data: result });
 }
