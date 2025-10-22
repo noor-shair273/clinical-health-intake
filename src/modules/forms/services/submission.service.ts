@@ -45,7 +45,6 @@ export async function validateSubmission(
 export async function acceptSubmission(
   formCode: string,
   submission: any,
-  submittedBy?: string
 ) {
   const result = await validateSubmission(formCode, submission);
 
@@ -59,8 +58,7 @@ export async function acceptSubmission(
   const doc = await Submission.create({
     formId: result.form._id,
     formVersionId: result.version._id,
-    answers: submission,
-    submittedBy,
+    answers: submission
   });
 
   return {

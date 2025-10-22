@@ -6,7 +6,6 @@ export interface SubmissionError {
   message: string;
 }
 
-/** Helper: test ISO-like date strings that can be parsed */
 function isValidDateString(v: any): boolean {
   if (typeof v !== "string" || !v.trim()) return false;
   const t = Date.parse(v);
@@ -52,7 +51,6 @@ export function validateFields(fields: NormalizedField[], data: any, path = ""):
     // If not provided and not required, skip type checks
     if (isMissing) continue;
 
-    // Type-specific validation (only if value exists)
     switch (field.type) {
       case "text": {
         if (typeof value !== "string") {

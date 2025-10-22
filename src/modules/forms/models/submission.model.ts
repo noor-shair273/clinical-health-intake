@@ -19,7 +19,4 @@ const SubmissionSchema = new Schema<SubmissionDoc>(
     { timestamps: true }
 );
 
-// helpful compound index for querying user history
-SubmissionSchema.index({ submittedBy: 1, createdAt: -1 });
-
 export const Submission = mongoose.model<SubmissionDoc>("Submission", SubmissionSchema);

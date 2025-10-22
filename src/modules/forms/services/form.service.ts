@@ -92,35 +92,63 @@ export async function getFormByCode(code: string) {
     return Form.findOne({ code });
 }
 
-export async function listVersions(formCode: string) {
+export async function listVersions(
+    formCode: string,
+    page: number = 1,
+    pageSize: number = 10
+) {
     const form = await Form.findOne({ code: formCode });
     if (!form) throw new Error("Form not found");
-    return FormVersion.find({ formId: form._id }).sort({ version: -1 });
+
+    const skip = (page - 1) * pageSize;
+
+    const [versions, total] = await Promise.all([
+        FormVersion.find({ formId: form._id })
+            .sort({ version: -1 })
+            .skip(skip)
+            .limit(pageSize),
+        FormVersion.countDocuments({ formId: form._id }),
+    ]);
+
+    return {
+        data: versions,
+        meta: {
+            total,
+            page,
+            pageSize,
+            totalPages: Math.ceil(total / pageSize),
+            hasNext: skip + pageSize < total,
+            hasPrev: page > 1,
+        },
+    };
 }
 
-export async function updateDraftDsl(formCode: string, dsl: any) {
-  const form = await Form.findOne({ code: formCode });
-if (!form) {
-    const err: any = new Error("Form not found");
-    err.statusCode = 404;
-    throw err;
-  }
-  // Find the draft version (latest by version)
-  //todo: accept version 
-  const draft = await FormVersion.findOne({ formId: form._id, status: FormStatus.Draft })
-    .sort({ version: -1 });
 
-  if (!draft) {
-     const err: any = new Error("No draft version to update");
-    err.statusCode = 409; // Conflict
-    throw err;
-  };
+export async function updateDraftDsl(formCode: string, versionNumber: number, dsl: any) {
+    const form = await Form.findOne({ code: formCode });
+    if (!form) {
+        const err: any = new Error("Form not found");
+        err.statusCode = 404;
+        throw err;
+    }
 
-  // Validate DSL
-  validateDslOrThrow(dsl);
+    const draft = await FormVersion.findOne({
+        formId: form._id,
+        version: versionNumber,
+        status: FormStatus.Draft
+    });
 
-  draft.dsl = dsl;
-  await draft.save();
+    if (!draft) {
+        const err: any = new Error("Draft version not found or not editable");
+        err.statusCode = 409; // Conflict
+        throw err;
+    }
 
-  return { form, version: draft };
+    validateDslOrThrow(dsl);
+
+    draft.dsl = dsl;
+    await draft.save();
+
+    return { form, version: draft };
 }
+

@@ -3,10 +3,10 @@ import { FormStatus } from "./../enums/formStatus";
 
 
 export interface FormVersionDoc extends mongoose.Document {
-  formId: Types.ObjectId;              // ref to Form
+  formId: Types.ObjectId;             
   version: number;                     
-  status: FormStatus;                  // enforce single published/version constraints
-  dsl: any;                            // your JSON DSL (fields, show_if, required_if, rules, groups)
+  status: FormStatus;                  
+  dsl: any;                            
   publishedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
