@@ -1,6 +1,8 @@
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import addErrors from "ajv-errors";
+import addKeywords from "ajv-keywords";
+
 
 import { dslSchema } from "../modules/forms/dsl/dsl.schema.js";
 
@@ -15,7 +17,7 @@ export const ajv = (() => {
 
     addFormats(instance);
     addErrors(instance);
-
+    addKeywords(instance, ["uniqueItemProperties"]);
     instance.addSchema(dslSchema, dslSchema.$id);
 
     return instance;

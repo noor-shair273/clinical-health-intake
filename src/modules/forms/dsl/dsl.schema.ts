@@ -50,7 +50,15 @@ export const dslSchema = {
         show_if: { $ref: "#/$defs/jsonLogic" },
 
         // choice fields
-        options: { type: "array", minItems: 1, items: { $ref: "#/$defs/option" } },
+        options: {
+          type: "array",
+          minItems: 1,
+          items: { $ref: "#/$defs/option" },
+          "uniqueItemProperties": ["value", "label"],
+          "errorMessage": {
+            "uniqueItemProperties": "Each option must have a unique value and label"
+          }
+        },
 
         // groups
         fields: { type: "array", items: { $ref: "#/$defs/field" } },

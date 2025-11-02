@@ -42,7 +42,7 @@ router.post(
 /**
  * POST /forms/:formCode/draft
  * params: { formCode }
- * body: { dsl? }  // optional on create; change to required if you prefer
+ * body: { dsl }  
  */
 router.post(
   "/:formCode/draft",
