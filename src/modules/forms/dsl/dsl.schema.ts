@@ -85,6 +85,9 @@ export const dslSchema = {
         {
           if: { properties: { type: { const: "group_repeat" } }, required: ["type"] },
           then: { required: ["fields"] }
+        },
+        {
+          repeatedFieldsCount: true
         }
       ]
     }

@@ -1,12 +1,8 @@
-import Ajv from "ajv";
-import addFormats from "ajv-formats";
+import {ajv} from "../lib/ajv";
 import { ValidationErrorType } from "../types/ValidationError";
-import addKeywords from "ajv-keywords";
 
-const ajv = new Ajv({ allErrors: true, strict: false });
-addFormats(ajv);
-addKeywords(ajv, ["uniqueItemProperties"]);
 export function validate(schema: any, data: any) {
+  
   const validate = ajv.compile(schema);
   const valid = validate(data);
 

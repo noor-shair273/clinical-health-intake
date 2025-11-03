@@ -63,13 +63,13 @@ function checkMinMaxConstraints(dsl: any) {
     for (const n of nodes || []) {
       // Only apply to repeatable groups
       if (n.type === "group_repeat") {
-        const min = n.min_items ?? 0;   // Default if undefined
-        const max = n.max_items ?? Infinity;
+        const min = n.min_repeat ?? 0;   // Default if undefined
+        const max = n.max_repeat ?? Infinity;
 
         if (max < min) {
           errs.push({
             field: n.code,
-            message: `max_items (${max}) must be greater than or equal to min_items (${min})`
+            message: `max_repeat (${max}) must be greater than or equal to min_repeat (${min})`
           });
         }
       }
