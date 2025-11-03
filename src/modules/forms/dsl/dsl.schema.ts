@@ -65,7 +65,19 @@ export const dslSchema = {
 
         // repeatable groups
         min_repeat: { type: "integer", minimum: 0 },
-        max_repeat: { type: "integer", minimum: 1 }
+        max_repeat: { type: "integer", minimum: 1 },
+      
+        
+        validation: {
+          type: "object",
+          required: ["rule"],
+          additionalProperties: false,
+          properties: {
+            rule: { $ref: "#/$defs/jsonLogic" },
+            message: { type: "string" } // optional custom error message
+          }
+        }
+
       },
       allOf: [
         // if select/radio -> options required

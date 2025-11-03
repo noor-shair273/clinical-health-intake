@@ -11,6 +11,7 @@ export interface NormalizedField {
   children?: NormalizedField[] | null;
   min_repeat?: number;
   max_repeat?: number;
+  validation?: any;
 }
 
 export function normalizeDsl(fields: any[]): NormalizedField[] {
@@ -28,6 +29,7 @@ export function normalizeDsl(fields: any[]): NormalizedField[] {
       min_repeat: field.min_repeat,
       max_repeat: field.max_repeat,
       children: field.fields ? normalize(field.fields) : null,
+      validation: field.validation,
     }));
 
   return normalize(fields);
@@ -77,11 +79,11 @@ export function buildTree(fields: any[], parentPath: string | null = null): Norm
       hasShowIf: !!f.show_if,
       hasRequiredIf: !!f.required_if,
       children: null,
+      validation: f.validation ?? null,
     };
 
     if (isContainer) {
-      // For repeatables, children show [] in their path base to indicate array pattern
-      const childParentPath = isRepeat ? `${f.code}[]` : node.path;
+      const childParentPath =node.path;
       node.children = buildTree(f.fields || [], childParentPath);
     }
 

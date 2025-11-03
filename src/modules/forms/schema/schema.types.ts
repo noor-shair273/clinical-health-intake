@@ -24,6 +24,10 @@ export interface NormalizedNode {
   hasRequiredIf: boolean;
 
   children: NormalizedNode[] | null;
+  validation?: {
+  rule: any;
+  message?: string;
+}
 }
 
 export interface SchemaPayload {

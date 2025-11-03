@@ -140,6 +140,19 @@ export function validateFields(fields: NormalizedField[], data: any, path = ""):
         errors.push({ field: fullPath, message: `Unknown field type '${field.type}'` });
       }
     }
+
+    // --- Cross-field validation (jsonLogic-based) ---
+    if (field.validation?.rule) {
+      const ok = evaluateLogic(field.validation.rule, data);
+      if (!ok) {
+        errors.push({
+          field: fullPath,
+          message: field.validation.message ||
+            `${field.label || field.code} failed validation rule`
+        });
+      }
+    }
+
   }
 
   return errors;
