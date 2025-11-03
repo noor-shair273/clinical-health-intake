@@ -20,7 +20,7 @@ async function getNextVersionNumber(formId: mongoose.Types.ObjectId) {
     return (last?.version ?? 0) + 1;
 }
 
-/** Create a new draft version; optionally clone from last published/draft */
+/** Create a new draft version; */
 export async function createDraftVersion(
     formCode: string,
     dsl: any = {}
@@ -46,8 +46,6 @@ export async function createDraftVersion(
 }
 
 /** Publish a draft version; archives any existing published version
- * NOTE: On single-node Mongo (no replica set), transactions are not supported.
- * We do two updates, relying on a partial unique index to guarantee 1 published/version.
  */
 export async function publishVersion(formCode: string, versionNumber: number) {
     const form = await Form.findOne({ code: formCode });
@@ -61,7 +59,7 @@ export async function publishVersion(formCode: string, versionNumber: number) {
         throw error;
     }
 
-    // 1) Archive any currently published (idempotent)
+    // 1) Archive any currently published 
     await FormVersion.updateMany(
         { formId: form._id, status: FormStatus.Published },
         { $set: { status: FormStatus.Archived } }
@@ -87,7 +85,6 @@ export async function publishVersion(formCode: string, versionNumber: number) {
     }
 }
 
-/** Convenience getters (handy for controllers) */
 export async function getFormByCode(code: string) {
     return Form.findOne({ code });
 }

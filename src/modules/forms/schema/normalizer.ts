@@ -38,7 +38,6 @@ export function normalizeDsl(fields: any[]): NormalizedField[] {
 
 /**
  * Normalize authoring DSL fields -> NormalizedNode tree (array).
- * - Preserves order
  * - Builds stable id/path/parentPath
  * - Keeps JSON-Logic as-is (clients can evaluate)
  */
@@ -47,7 +46,6 @@ export function buildTree(fields: any[], parentPath: string | null = null): Norm
     const isRepeat = f.type === "group_repeat";
     const isContainer = f.type === "group" || f.type === "group_repeat";
 
-    // parentPath affects this node’s path if nested; children of repeat use [] in their own path
     const path = parentPath ? `${parentPath}.${f.code}` : f.code;
 
     const node: NormalizedNode = {
@@ -65,10 +63,10 @@ export function buildTree(fields: any[], parentPath: string | null = null): Norm
       },
       options: Array.isArray(f.options)
         ? f.options.map((o: any) =>
-            (o && typeof o === "object" && "value" in o)
-              ? { value: o.value, label: o.label ?? String(o.value) }
-              : { value: o, label: String(o) }
-          )
+          (o && typeof o === "object" && "value" in o)
+            ? { value: o.value, label: o.label ?? String(o.value) }
+            : { value: o, label: String(o) }
+        )
         : null,
       constraints: {
         ...(f.min_repeat !== undefined ? { min_repeat: f.min_repeat } : {}),
@@ -83,7 +81,8 @@ export function buildTree(fields: any[], parentPath: string | null = null): Norm
     };
 
     if (isContainer) {
-      const childParentPath =node.path;
+      // For repeatables, children show [] in their path base to indicate array pattern
+      const childParentPath = isRepeat ? `${f.code}[]` : node.path; 
       node.children = buildTree(f.fields || [], childParentPath);
     }
 
